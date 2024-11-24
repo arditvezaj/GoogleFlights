@@ -7,12 +7,17 @@ import {
   SelectChangeEvent,
   Button,
 } from "@mui/material";
-import DatePicker from "./components/DatePicker";
+import DatePicker from "./DatePicker";
 import { Search as SearchIcon } from "@mui/icons-material";
+import apiRequest from "../axios";
 
 const Search = () => {
   const [trip, setTrip] = useState("Round trip");
   const [tripClass, setTripClass] = useState("Economy");
+  const [date, setDate] = useState(new Date());
+
+  const [fromOptions, setFromOptions] = useState<any[]>([]);
+  const [toOptions, setToOptions] = useState<any[]>([]);
 
   const handleTripChange = (event: SelectChangeEvent<string>) => {
     setTrip(event.target.value);
@@ -20,6 +25,36 @@ const Search = () => {
 
   const handleTripClassChange = (event: SelectChangeEvent<string>) => {
     setTripClass(event.target.value);
+  };
+
+  const handleFromChange = async (event: any) => {
+    try {
+      const response = await apiRequest<any>(
+        "flights/searchFlights",
+        "GET",
+        event.target.value
+      );
+      setFromOptions(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToChange = async (event: any) => {
+    try {
+      const response = await apiRequest<any>(
+        "flights/searchFlights",
+        "GET",
+        event.target.value
+      );
+      setToOptions(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDateChange = (date: Date) => {
+    setDate(date);
   };
 
   return (
@@ -57,28 +92,45 @@ const Search = () => {
           <MenuItem value="First">First</MenuItem>
         </Select>
       </div>
-      <div className="flex gap-4 mb-3">
-        <Autocomplete
-          disablePortal
-          options={["Hello", "World", "Foo", "Bar", "Baz"]}
-          sx={{ width: 300 }}
-          renderInput={(params) => (
-            <TextField {...params} label="Where from?" />
-          )}
-        />
-        <Autocomplete
-          disablePortal
-          options={["Hello", "World", "Foo", "Bar", "Baz"]}
-          sx={{ width: 300 }}
-          renderInput={(params) => <TextField {...params} label="Where to?" />}
-        />
-        <DatePicker />
+      <div className="flex flex-col md:flex-row gap-4 mb-3">
+        <div className="flex gap-2">
+          <Autocomplete
+            disablePortal
+            options={fromOptions.map(
+              (option: any) => option.presentation.title
+            )}
+            sx={{ width: 300 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Where from?"
+                onChange={handleFromChange}
+              />
+            )}
+          />
+          <Autocomplete
+            disablePortal
+            options={fromOptions.map(
+              (option: any) => option.presentation.title
+            )}
+            sx={{ width: 300 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Where to?"
+                onChange={handleToChange}
+              />
+            )}
+          />
+        </div>
+        <DatePicker value={date} onChange={handleDateChange} />
       </div>
       <Button
         variant="contained"
         startIcon={<SearchIcon />}
         className="w-[120px] h-[40px] self-center"
         style={{ borderRadius: "100px", marginBottom: "-37px" }}
+        // onClick={handleSubmit}
       >
         Explore
       </Button>

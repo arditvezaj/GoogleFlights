@@ -3,8 +3,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const FAQ = () => {
   return (
-    <div className="flex flex-col gap-8 p-7 text-gray-600">
-      <h1 className="font-semibold text-lg text-black">
+    <div className="flex flex-col text-gray-600">
+      <h1 className="font-semibold text-lg text-black mb-5">
         Frequently Asked Questions
       </h1>
       <Accordion>
